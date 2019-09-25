@@ -721,8 +721,10 @@ void resend_zt(int len,uint8_t *cmd,char *dev_id,char *dev_type)
 				resend_d->now_time = time_val.tv_sec*1000+time_val.tv_usec/1000;//记录时间
 				resend_d->now_times = 1;//记录当前的发送次数
 				memcpy(resend_d->cmd,cmd,len);
-				memcpy(resend_d->dev_id,dev_id,strlen(dev_id)+1);
-				memcpy(resend_d->dev_type,dev_type,strlen(dev_type)+1);
+				memset(p->dev_id,0,20);
+				memcpy(p->dev_id,dev_id,strlen(dev_id)+1);
+				memset(p->dev_type,0,10);
+				memcpy(p->dev_type,dev_type,strlen(dev_type)+1);
 				p->next = resend_d;
 				resend_d->next = NULL;
 				return ;
