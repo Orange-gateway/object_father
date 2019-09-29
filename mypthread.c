@@ -363,7 +363,6 @@ void pthread_usart_receive(void)
 								up_resend(my_u_data);//更新重发列表
 								if(up_sign_mac(my_u_data)==1)
 								{
-									printf("zhu wang guan : %.2x %.2x\n",my_u_data[8],my_u_data[9]);
 									uint8_t *notice_mac = NULL;
 									notice_mac = (uint8_t *)malloc(21);
 									memset(notice_mac,0,21);
@@ -577,7 +576,7 @@ void re_send(void)
 					if(p->now_times>=6)//更新发送的发送次数，表明失败放弃。
 					{
 						p->now_times=0;
-						if( NET_FLAG )
+						if( NET_FLAG && p->cmd[10] != 0x60 )
 						{
 							pthread_mutex_lock(&mutex_zl);
 							cJSON *device_state_list_data = cJSON_Parse(device_state_list);//遍历设备状态列表
@@ -1046,6 +1045,7 @@ void my_timer(void)
 			time(&mytime);
 			p = localtime(&mytime);
 			p->tm_mon+=1;
+			if(!p->tm_wday) p->tm_wday += 7;
 			if(p->tm_sec ==0 || p->tm_sec ==1 || p->tm_sec ==2 || first_num)
 			{
 				first_num = 0;
