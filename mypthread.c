@@ -657,7 +657,7 @@ void re_send(void)
 					}
 					else
 					{
-						int cmd_len = p->cmd[13]+p->cmd[14]+15;
+						int cmd_len = p->cmd[13]*256+p->cmd[14]+15;
 						gettimeofday(&time_val,NULL);
 						p->now_time = time_val.tv_sec*1000+time_val.tv_usec/1000;
 						memset(dev_mac_resend,0,17);

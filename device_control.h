@@ -13,7 +13,7 @@ void cmd_delete_mix(char *mac,char *cmd,uint8_t *final_cmd);
 void cmd_request_describ_mix(char *mac,char *cmd,uint8_t *final_cmd);
 void cmd_mix_kt(char *lid,char *cmd,char *kt_code,char *mac,char *id,int len,uint8_t *final_cmd);//发送至串口合成命令(kt)
 void cmd_mix_fkt(char *fkt_code,char *mac,int len,uint8_t *final_cmd);//发送至串口合成命令(fkt)
-void cmd_mix_lock(char *mac,char *port,uint8_t *final_cmd);//发送至串口合成命令(开锁控制指令)
+void cmd_mix_lock(char *mac,char *port,char *cmd,uint8_t *final_cmd);//发送至串口合成命令(开锁控制指令)
 void cmd_hw_study_or_complish(char *mac,uint8_t *final_cmd,int flag);//发送至串口红外学习命令合成
 void dev_lock_con(int i,int u_data_len,uint8_t *u_data,char *u_data_str);
 void dev_com_con(cJSON *root);

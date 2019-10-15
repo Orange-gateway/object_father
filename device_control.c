@@ -181,7 +181,7 @@ void cmd_hw_study_or_complish(char *mac,uint8_t *final_cmd,int flag)//发送至�
 	final_cmd[16] = 0x02;
 }
 
-void cmd_mix_lock(char *mac,char *port,uint8_t *final_cmd)//发送至串口合成命令(开锁控制指令)
+void cmd_mix_lock(char *mac,char *port,char *cmd,uint8_t *final_cmd)//发送至串口合成命令(开锁控制指令)
 {
 	char send_cmd[51];
 	memset(send_cmd,0,51);
@@ -190,6 +190,8 @@ void cmd_mix_lock(char *mac,char *port,uint8_t *final_cmd)//发送至串口合�
 	strcat(send_cmd,"90");
 	strcat(send_cmd,port);
 	strcat(send_cmd,"00000aaa550200000000000000");
+	memcpy(send_cmd+38,cmd+4,2);
+	printf("send locek : (%d)%s\n",(int)strlen(send_cmd),send_cmd);
 	str_to_hex(final_cmd,send_cmd,25);
 }
 
@@ -415,12 +417,32 @@ void update_gw_bind_mac(void)
 						write(gw_mac_dev_fd,"{}",2);
 						fsync(gw_mac_dev_fd);
 						close(gw_mac_dev_fd);
+						memset(gw_dev_mac_list,0,10240);
+						memcpy(gw_dev_mac_list,"{}",2);
 					}
 					while_find = while_find->next;
 				}
 			}
+			char *send_char = cJSON_PrintUnformatted(gw_mac_dev);
+			memset(gw_dev_mac_list,0,10240);
+			memcpy(gw_dev_mac_list,send_char,strlen(send_char));
+			int gw_mac_dev_fd = open("/root/gw_bin_dev.txt",O_RDWR|O_CREAT|O_TRUNC,0777);
+			write(gw_mac_dev_fd,send_char,strlen(send_char));
+			fsync(gw_mac_dev_fd);
+			close(gw_mac_dev_fd);
+			free(send_char);
+			send_char = NULL;
 			cJSON_Delete(gw_mac_dev);
 			gw_mac_dev = NULL;
+		}
+		else
+		{
+			int gw_mac_dev_fd = open("/root/gw_bin_dev.txt",O_RDWR|O_CREAT|O_TRUNC,0777);
+			write(gw_mac_dev_fd,"{}",2);
+			fsync(gw_mac_dev_fd);
+			close(gw_mac_dev_fd);
+			memset(gw_dev_mac_list,0,10240);
+			memcpy(gw_dev_mac_list,"{}",2);
 		}
 	}
 	else
@@ -429,6 +451,8 @@ void update_gw_bind_mac(void)
 		write(gw_mac_dev_fd,"{}",2);
 		fsync(gw_mac_dev_fd);
 		close(gw_mac_dev_fd);
+		memset(gw_dev_mac_list,0,10240);
+		memcpy(gw_dev_mac_list,"{}",2);
 	}
 	cJSON_Delete(dev_list_data);
 	dev_list_data = NULL;
@@ -487,7 +511,7 @@ void dev_com_con(cJSON *root)//无内存泄露问题
 					memset(final_cmd,0,15+len_of_cmd);
 					if(strcmp(dev_type_this->valuestring,"0D0101")==0)
 					{
-						cmd_mix_lock(data_mac->valuestring,data_port->valuestring,final_cmd);
+						cmd_mix_lock(data_mac->valuestring,data_port->valuestring,data_dev_cmd->valuestring,final_cmd);
 						find_mac_and_send(data_mac->valuestring,final_cmd,15+len_of_cmd);
 					}
 					else if(strcmp(dev_type_this->valuestring,"010101")==0)
@@ -4845,6 +4869,7 @@ void get_signal(void)
 				data_arr_jx = cJSON_GetArrayItem(my_dev_list_list,i);
 				tem_mac = cJSON_GetObjectItem(data_arr_jx,"mac");
 				tem_type = cJSON_GetObjectItem(data_arr_jx,"dev_type");
+				tem_id = cJSON_GetObjectItem(data_arr_jx,"dev_id");
 				if(strcmp(tem_type->valuestring,"010101")==0)
 					flag_get=1;
 				else if(strcmp(tem_type->valuestring,"010102")==0)
@@ -4884,6 +4909,7 @@ void get_signal(void)
 					if(sig_head==NULL)
 					{
 						sig_d = (SIG *)malloc(sizeof(SIG));
+						memset(sig_d,0,sizeof(SIG));
 						sig_d->mac = tem_mac;
 						sig_d->dev_id = tem_id;
 						sig_d->dev_type = tem_type;
@@ -4901,6 +4927,7 @@ void get_signal(void)
 							if(p==NULL)
 							{
 								sig_d = (SIG *)malloc(sizeof(SIG));
+								memset(sig_d,0,sizeof(SIG));
 								sig_d->mac = tem_mac;
 								sig_d->dev_id = tem_id;
 								sig_d->dev_type = tem_type;
