@@ -8972,7 +8972,6 @@ void run_the_scene(char *str_id)
 
 void run_scene_u_triger(char *dev_id,char *status)
 {
-	int scene_triger_flag = 0;
 	pthread_mutex_lock(&mutex_scene);
 	cJSON *scene_list_root = cJSON_Parse(scene_list);//遍历情景列表
 	pthread_mutex_unlock(&mutex_scene);
@@ -9019,7 +9018,6 @@ void run_scene_u_triger(char *dev_id,char *status)
 										memset(scene_id_pthread,0,strlen(scene_id_zx->valuestring)+1);
 										memcpy(scene_id_pthread,scene_id_zx->valuestring,strlen(scene_id_zx->valuestring)+1);
 										pth_creat_my(run_the_scene,scene_id_pthread);
-										scene_triger_flag = 1;
 										if(NET_FLAG)
 										{
 											cJSON *push = cJSON_GetObjectItem(scene_for,"is_push");
@@ -9063,7 +9061,6 @@ void run_scene_u_triger(char *dev_id,char *status)
 												memset(scene_id_pthread,0,strlen(scene_id_zx->valuestring)+1);
 												memcpy(scene_id_pthread,scene_id_zx->valuestring,strlen(scene_id_zx->valuestring)+1);
 												pth_creat_my(run_the_scene,scene_id_pthread);
-												scene_triger_flag = 1;
 												if(NET_FLAG)
 												{
 													cJSON *push = cJSON_GetObjectItem(scene_for,"is_push");
@@ -9114,7 +9111,6 @@ void run_scene_u_triger(char *dev_id,char *status)
 												memset(scene_id_pthread,0,strlen(scene_id_zx->valuestring)+1);
 												memcpy(scene_id_pthread,scene_id_zx->valuestring,strlen(scene_id_zx->valuestring)+1);
 												pth_creat_my(run_the_scene,scene_id_pthread);
-												scene_triger_flag = 1;
 												if(NET_FLAG)
 												{
 													cJSON *push = cJSON_GetObjectItem(scene_for,"is_push");
@@ -9158,7 +9154,6 @@ void run_scene_u_triger(char *dev_id,char *status)
 														memset(scene_id_pthread,0,strlen(scene_id_zx->valuestring)+1);
 														memcpy(scene_id_pthread,scene_id_zx->valuestring,strlen(scene_id_zx->valuestring)+1);
 														pth_creat_my(run_the_scene,scene_id_pthread);
-														scene_triger_flag = 1;
 														if(NET_FLAG)
 														{
 															cJSON *push = cJSON_GetObjectItem(scene_for,"is_push");
@@ -9197,10 +9192,9 @@ void run_scene_u_triger(char *dev_id,char *status)
 									}
 								}
 							}
+							break;
 						}
-						if(scene_triger_flag) break;
 					}
-					if(scene_triger_flag) break;
 				}
 			}
 		}
